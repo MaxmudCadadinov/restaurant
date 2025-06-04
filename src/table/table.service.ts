@@ -75,4 +75,24 @@ export class TableService {
             table.booking_status = true
             }else{return {message: 'стол уже забронирован'}}
         }
+
+        async updateBookingTime(id, dto: BookingDateDto){
+            const table = await this.tablesEntity.findOne({where: {id: Number(id)}})
+            if(!table){throw new NotFoundException("table not found")}
+            if(table.booking_status = true){
+                table.booking_date = new Date(dto.booking_table_date)
+            return await this.tablesEntity.save(table)
+            }else{return {message: "table not booked"}}
+        }
+
+        async unbooking_table(id){
+            const table = await this.tablesEntity.findOne({where:{id:Number(id)}})
+            if(!table){throw new NotFoundException("table not found")}
+
+            if(table.booking_status === true){
+                table.booking_status = null
+                table.booking_date = null
+                return await this.tablesEntity.save(table)
+            }else{return {message: "table not booked"}}
+        }
 }

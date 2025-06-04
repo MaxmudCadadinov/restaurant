@@ -17,7 +17,7 @@ export class Tables {
   status: number;
 
   @Column({ type: 'boolean', nullable: true })
-  booking_status: boolean;
+  booking_status: boolean | null;
   
   @Column({ type: 'datetime', nullable: true })
   booking_date: Date | null;
