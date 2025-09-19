@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateDayDto {
   @ApiProperty()
   @IsNotEmpty()
+  @Type(() => Number)
   @IsInt()
   administrator_id: number; // id администратора, который открыл день
 }

@@ -16,13 +16,23 @@ export class Tables {
   @Column({ type: 'int', nullable: true, default: 0 })
   status: number;
 
+  @Column({ type: 'boolean', nullable: true })
+  booking_status: boolean;
+  
   @Column({ type: 'datetime', nullable: true })
-  booking_date: Date;
+  booking_date: Date | null;
 
-  @ManyToOne(() => Order, (order) => order.tabl)
+  @Column({ type: 'boolean', nullable: true })
+  chacking_status: boolean | null;
+
+  @ManyToOne(() => Order, (order) => order.tabl, { nullable: true })
   @JoinColumn({name: 'order_id'})
-  order: Order;
+  order: Order | null;
 
   @OneToMany(() => Order, (order) => order.table)
   orders: Order[];//
+
+
+
+
 }

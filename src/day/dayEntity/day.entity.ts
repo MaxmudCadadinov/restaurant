@@ -7,7 +7,7 @@ export class Day {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'decimal',precision: 10, scale: 2, nullable: true })
+  @Column({ type: 'decimal',precision: 10, scale: 2, default: 0 })
   amount: number;
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })

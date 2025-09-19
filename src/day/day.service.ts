@@ -23,9 +23,9 @@ export class DayService {
 
 async addDay(dto: CreateDayDto){
   
-    const role = await this.roleEntity.findOne({where:{id: 2}})
+    const role = await this.roleEntity.findOne({where:{id: 3}})
     if(!role){throw new NotFoundException("Role not founded")}
-    const find_administrator = await this.staffEntity.findOne({where:{id: dto.administrator_id, role: role}})
+    const find_administrator = await this.staffEntity.findOne({where:{id: dto.administrator_id, role: role}, relations: ['role']})
     if(!find_administrator){throw new NotFoundException('administator not founded')}
     const new_day = await this.dayEntity.create({finish: null, administrator: find_administrator})
     const saved_day = await this.dayEntity.save(new_day)

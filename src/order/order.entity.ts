@@ -19,10 +19,10 @@ export class Order {
   @Column({ type: 'datetime', nullable: true })
   closed: Date;
 
-  @Column({type: 'decimal',precision: 10, scale: 2, nullable: true})
+  @Column({type: 'decimal',precision: 10, scale: 2, default: 0})
   total_summ: number
  
-  @ManyToOne(() => Staff, (staff) => staff.orders)
+  @ManyToOne(() => Staff, (staff) => staff.orders, )
   @JoinColumn({name:'worker_id'})
   worker: Staff; 
 
