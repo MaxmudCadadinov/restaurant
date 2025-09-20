@@ -3,7 +3,7 @@ import { CreateOrderDto } from './orderDto/createOrderDto'
 import { OrderService } from './order.service'
 import { DayOpenGuard } from 'src/StatusdayGuards/DayOpenGuard';
 import { UpdateOrderDto } from './orderDto/updateOrderDto';
-
+import { DeleteFoodInOrderDto } from './orderDto/deleteFoodInOrderDto';
 
 @Controller('order')
 export class OrderController {
@@ -21,6 +21,9 @@ export class OrderController {
         return await this.orderService.updateOtherInOrder(dto, Number(id))
     }
 
-    
+    @Delete('/deleteFoodInOrder/:id')
+    async deleteFoodInOrder(@Param('id', ParseIntPipe) id: string, @Body() dto: DeleteFoodInOrderDto){
+        return await this.orderService.deleteFoodInOrder(id, dto)
+    }
 
 }

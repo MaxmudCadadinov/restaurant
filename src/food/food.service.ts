@@ -4,6 +4,7 @@ import { Foods } from './food.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeMenu } from '../type_menu/type_menu.entity'
+import { StopStatus } from './food.entity';
 
 @Injectable()
 export class FoodService {
@@ -21,4 +22,19 @@ constructor(
         return saved_food
     }   
     
+    async stopped_food(id: string){
+        const food = await this.foodsEntity.findOne({where:{id: Number(id)}})
+        if (!food){throw new NotFoundException("food not found")}
+        if(food.is_stop === StopStatus.STOPPED){throw new NotFoundException("food already stopped")}
+        food.is_stop = StopStatus.STOPPED
+        return await this.foodsEntity.save(food)
     }
+
+    async unstoped_food(id: string){
+        const food = await this.foodsEntity.findOne({where:{id: Number(id)}})
+        if (!food){throw new NotFoundException("food not found")}
+        if(food.is_stop === StopStatus.NOT_STOPPED){throw new NotFoundException("food already unstoped")}
+        food.is_stop = StopStatus.NOT_STOPPED
+        return await this.foodsEntity.save(food)
+}
+}

@@ -34,32 +34,42 @@ export class TableService {
 
             if(table.status === 1 && table.chacking_status === true){
                 table.chacking_status = null
+                table.status = 0
                 return await this.tablesEntity.save(table)
             }else{return {message: 'счет не оплачен или пустой стол'}}
         }
 
         async close_chack(id){
-            const table = await this.tablesEntity.findOne({where: {id:Number(id) }})
+            const table = await this.tablesEntity.findOne({where: {id:Number(id) }, relations: ['order']})
             if(!table){throw new NotFoundException("table not found")}
             
+            //console.log(table)
             if (table.status === 1 &&  table.chacking_status === false && table.order){
-                const day_id = (await this.statusDayEntity.findOne({where: {id: 1}}))?.id
+                const day_id = (await this.statusDayEntity.findOne({where: {id: 1, is_open: true}}))?.day_id
+                if(!day_id){throw new NotFoundException("dayId not found")}
+                //console.log(day_id)
                 const day = await this.dayEntity.findOne({where: {id: day_id}})
-                if(!day){throw new NotFoundException}
+                if(!day){throw new NotFoundException("day not found")}
+                //console.log(day)
+                day.amount += Number(table.order.total_summ)
+                day.count_chack += 1
+           
                 
-                day.amount += table.order.total_summ
-                await this.dayEntity.save(day)
                 
                 
-
                 const order = await this.orderEntity.findOne({where: {id: table.order.id}})
                 if(!order){throw new NotFoundException}
                 order.closed = new Date()
-                await this.orderEntity.save(order) 
 
-
+                
+                
                 table.chacking_status = true
                 table.order = null 
+                
+
+                
+                await this.orderEntity.save(order) 
+                await this.dayEntity.save(day)
                 
                 return await this.tablesEntity.save(table)
             }else{return {message: 'Стол пустой и т.д'}}
@@ -73,13 +83,14 @@ export class TableService {
 
             table.booking_date =  new Date(dto.booking_table_date)   
             table.booking_status = true
+            return await this.tablesEntity.save(table)
             }else{return {message: 'стол уже забронирован'}}
         }
 
         async updateBookingTime(id, dto: BookingDateDto){
             const table = await this.tablesEntity.findOne({where: {id: Number(id)}})
             if(!table){throw new NotFoundException("table not found")}
-            if(table.booking_status = true){
+            if(table.booking_status === true){
                 table.booking_date = new Date(dto.booking_table_date)
             return await this.tablesEntity.save(table)
             }else{return {message: "table not booked"}}
@@ -90,7 +101,7 @@ export class TableService {
             if(!table){throw new NotFoundException("table not found")}
 
             if(table.booking_status === true){
-                table.booking_status = null
+                table.booking_status = false
                 table.booking_date = null
                 return await this.tablesEntity.save(table)
             }else{return {message: "table not booked"}}

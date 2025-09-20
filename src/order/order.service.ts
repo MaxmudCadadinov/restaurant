@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Order } from './order.entity'
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,7 +9,7 @@ import { OrderItems } from '../order_items/order_items.entity'
 import { Foods } from 'src/food/food.entity';
 import { StatusDay } from 'src/day/dayEntity/statusDay.entity';
 import { UpdateOrderDto } from './orderDto/updateOrderDto';
-
+import { DeleteFoodInOrderDto } from './orderDto/deleteFoodInOrderDto';
 
 @Injectable()
 export class OrderService {
@@ -34,6 +34,7 @@ if(!dto.order_id){
 
         const table = await this.tableEntity.findOne({where: {id: dto.table_id}})
         if(!table){throw new NotFoundException("table not found")}
+        
         if (table.status === 0 && !table.order){
 
             //Заполняем rder
@@ -41,37 +42,46 @@ if(!dto.order_id){
             if (!worker){throw new NotFoundException("worker not found")}
             const day_id = await this.statusDay.findOne({where:{id: 1}})
             if(!day_id){throw new NotFoundException}
+            
             const new_order = await this.orderEntity.create({table: table, worker: worker, day: { id: day_id.day_id } as any})
-            const saved_order = await this.orderEntity.save(new_order)
-
-
-            await this.tableEntity.update({id:table.id}, { status: 1, order: saved_order })
-
+            
+            
+            
             //Заполняем orderItem
             const order_items = dto.items
             
             const map  = new Map()
             for(let i of order_items){
+                const food = await this.foodsEntity.findOne({where:{id: i.food_id}})
+                if(!food){throw new NotFoundException("food not found")}
+                if(food.is_stop === 'stopped'){continue}
                 let prev = map.get(i.food_id) || 0
                 map.set(i.food_id, prev + i.quantity)
             }
+         //Map(3) { 2 => 4, 1 => 3, 4 => 6 }
+            const order_itemsArray:any[] = [] 
             
-            let total = saved_order.total_summ
+            let total = 0
+           if(map.size === 0){throw new BadRequestException("all foods are stopped")}
             for(let[key, value] of map){
                 const food = await this.foodsEntity.findOne({where:{id: key}})
                 if(!food){throw new NotFoundException("food not found")}
                 total += food.price * value
-                const order_item = await this.orderItemsEntity.create({order: saved_order,food: key, quantity: value})
-                    await this.orderItemsEntity.save(order_item)
+                const order_item = await this.orderItemsEntity.create({order: new_order ,food: key, quantity: value})
+                order_itemsArray.push(order_item)
             }        
-            const up_price = this.orderEntity.update(saved_order.id, {total_summ: total})
 
-            const all_order_items = await this.orderItemsEntity.find({where:{id: saved_order.id}, relations: ['food']})
-
-           
-
-
-
+            new_order.total_summ=total
+            const saved_order = await this.orderEntity.save(new_order)
+            
+            for(let order_item of order_itemsArray){
+                order_item.order=saved_order  
+                await this.orderItemsEntity.save(order_item)
+            }
+            
+            await this.tableEntity.update({id:table.id}, { status: 1, order: saved_order, chacking_status: false })
+            
+            return saved_order
 
         }else{return {"message1": "Ничего не произашло"}}
 
@@ -81,15 +91,10 @@ if(!dto.order_id){
         const order = await this.orderEntity.findOne({where: {id: dto.order_id}, relations:['table']})
         //console.log(order)
         if (!order){throw new NotFoundException("order not found")}
+        if(order.closed){throw new BadRequestException("order closed")}
         const table = await this.tableEntity.findOne({where: {id: order.table.id}, relations: ['order']})
         if(!table){throw new NotFoundException("table not found")}
         //console.log(table)
-        
-        
-        
-        
-
-        
         
         if(table.status === 1 && table.order){
 
@@ -97,6 +102,9 @@ if(!dto.order_id){
 
         const map = new Map()
         for(let i of newItems){
+            const food = await this.foodsEntity.findOne({where:{id: i.food_id}})
+            if(!food){throw new NotFoundException("food not found")}
+            if(food.is_stop === 'stopped'){continue}
             let prev = map.get(i.food_id) || 0
             map.set(i.food_id, prev + i.quantity)
         }
@@ -141,12 +149,40 @@ if(!dto.order_id){
         await this.orderEntity.update(order.id, {total_summ: total_summ})
     }
 
-
-
-
         }
 
     
+
+
+
+
+    async deleteFoodInOrder(id: string, dto: DeleteFoodInOrderDto){
+        const order = await this.orderEntity.findOne({where:{id: Number(id)}})
+        if(!order){throw new NotFoundException('order not found')}
+        if(!order.closed){
+            const order_item = await this.orderItemsEntity.find({where: {order: order}})
+
+            const dto_items = dto.items
+            for (let i of dto_items){
+                console.log(i)
+            }
+        }else{ return {"message": "Order closed"} }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     async updateOtherInOrder(dto: UpdateOrderDto, id: number){
         const order = await this.orderEntity.findOne({where:{id: Number(id)}, relations: ['table']})
@@ -171,6 +207,7 @@ if(!dto.order_id){
         }
     }
 
+    
     }
 
 

@@ -7,8 +7,14 @@ export class Day {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'decimal',precision: 10, scale: 2, default: 0 })
+  @Column({ type: 'decimal',precision: 10, scale: 2, default: 0, transformer: {
+    to: (value: number) => value,
+    from: (value: string): number => Number(value),
+  },})
   amount: number;
+
+  @Column({ type: 'int', unsigned: true, default: 0, })
+  count_chack: number;
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   start: Date;

@@ -14,7 +14,7 @@ export class TableController {
         return await this.tableService.add_table(dto)
     }
     @Patch('/booking_table/:id')
-    async booking(@Param('id', ParseIntPipe) id: string, dto: BookingDateDto){
+    async booking(@Param('id', ParseIntPipe) id: string, @Body()dto: BookingDateDto){
         return await this.tableService.booking_table(id, dto)
     }
 
@@ -25,7 +25,7 @@ export class TableController {
     }
 
     @Patch('/update_Booking_time/:id')
-    async updateBooking(@Param('id', ParseIntPipe) id: string, dto: BookingDateDto){
+    async updateBooking(@Param('id', ParseIntPipe) id: string, @Body()dto: BookingDateDto){
         return await this.tableService.updateBookingTime(id, dto)
     }
 

@@ -2,7 +2,14 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColum
 import { TypeMenu } from '../type_menu/type_menu.entity';
 import { OrderItems } from '../order_items/order_items.entity';
 
+export enum StopStatus {
+  STOPPED = 'stopped',
+  NOT_STOPPED = 'not_stopped',
+}
+
+
 @Entity('foods')
+
 export class Foods {
   @PrimaryGeneratedColumn()
   id: number;
@@ -12,6 +19,9 @@ export class Foods {
 
   @Column({ type: 'int', nullable: true })
   price: number;
+
+  @Column({ type: 'enum', enum: StopStatus, default: StopStatus.NOT_STOPPED })
+  is_stop: StopStatus;
 
   @ManyToOne(() => TypeMenu, (typeMenu) => typeMenu.foods)
   @JoinColumn({name: 'type_id'})
