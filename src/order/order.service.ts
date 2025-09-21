@@ -157,16 +157,68 @@ if(!dto.order_id){
 
 
     async deleteFoodInOrder(id: string, dto: DeleteFoodInOrderDto){
-        const order = await this.orderEntity.findOne({where:{id: Number(id)}})
+        const order = await this.orderEntity.findOne({where:{id: Number(id)}, relations: ['orderItems', 'orderItems.food']})
         if(!order){throw new NotFoundException('order not found')}
-        if(!order.closed){
-            const order_item = await this.orderItemsEntity.find({where: {order: order}})
-
-            const dto_items = dto.items
+        if(order.closed){throw new BadRequestException("Table closed already")}
+            
+            let dtoMap = new Map()
+            
+            const dto_items = dto.items // ПОЛУЧАЕМ ИЗ ДТО ITEMS
             for (let i of dto_items){
-                console.log(i)
+                const food = await this.foodsEntity.findOne({where:{id: i.food_id}})
+                if(!food){throw new NotFoundException("food not found")}
+                const prev = dtoMap.get(i.food_id) || 0
+                dtoMap.set(i.food_id, prev + i.quantity)
             }
-        }else{ return {"message": "Order closed"} }
+       //ПОЛУЧАЕМ МАП БЕЗ ДУБЛИКАТОВ
+    
+            
+            const order_item = await this.orderItemsEntity.find({where: {order: order}, relations: ['food']})// ПОЛУЧАЕМ ORDERiTEMS 
+            
+
+            let orderItemMap = new Map()
+            for(let i of order_item){
+                const prev = orderItemMap.get(i.food.id) || 0
+                orderItemMap.set(i.food.id, i.quantity)
+            }
+            //ПОЛУЧАЕМ ORDERITEMS D MAP БЕЗ ДУБЛИКАТОВ
+
+        for(let[foodId, quantity] of dtoMap){
+            if(orderItemMap.has(foodId)){
+                const prev = orderItemMap.get(foodId) || 0
+                const new_quantity = Math.max(prev - quantity, 0)
+                orderItemMap.set(foodId, new_quantity)
+                
+
+            }//ПОЛУЧАЕМ ОКОНЧАТЕЛЬНЫЙ ORDERiTEMS В МАПЕ
+        }
+
+        let total = 0 
+        const ex : any[] = []
+        for(let [foodId, quantity] of orderItemMap ){
+            const food = await this.foodsEntity.findOne({where: {id: Number(foodId)}})
+            if(!food){throw new NotFoundException}
+            total += food.price * quantity 
+            const creat_order_item  = await this.orderItemsEntity.create({order: order, quantity: quantity, food: food})
+            ex.push(creat_order_item)
+        }
+
+
+        for(let i of ex){
+            const exec = await this.orderItemsEntity.findOne({where:{food: i.food, order: order}})
+            if(exec && i.quantity > 0){
+                exec.quantity = i.quantity
+                await this.orderItemsEntity.save(ex)
+            }else if(exec && i.quantity <= 0){
+                await this.orderItemsEntity.delete(exec.id)
+            }
+            
+        }
+        order.total_summ = total
+        return  await this.orderEntity.save(order)
+       
+
+       
 
     }
 
