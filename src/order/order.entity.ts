@@ -31,7 +31,7 @@ export class Order {
   day: Day;  //
 
   @OneToMany(() => OrderItems, (oi) => oi.order)
-  orderItems: Day[];
+  orderItems: OrderItems[];
 
   @OneToMany(() => Tables, (tables) => tables.order)
   tabl: Day[];
