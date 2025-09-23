@@ -6,7 +6,7 @@ import { Repository, IsNull } from 'typeorm';
 import { Staff } from 'src/staff/staff.entity/staff.entity';
 import { Role } from '../role/role.entity'
 import { StatusDay } from './dayEntity/statusDay.entity'
-
+import { Status_day } from './dayEntity/statusDay.entity';
 
 @Injectable()
 export class DayService {
@@ -23,23 +23,25 @@ export class DayService {
 
 async addDay(dto: CreateDayDto){
   
-    const role = await this.roleEntity.findOne({where:{id: 3}})
-    if(!role){throw new NotFoundException("Role not founded")}
+    const role = await this.roleEntity.findOne({where:{id: 3}}) ;   if(!role){throw new NotFoundException("Role not founded")}
+    
     const find_administrator = await this.staffEntity.findOne({where:{id: dto.administrator_id, role: role}, relations: ['role']})
     if(!find_administrator){throw new NotFoundException('administator not founded')}
+    
     const new_day = await this.dayEntity.create({finish: null, administrator: find_administrator})
     const saved_day = await this.dayEntity.save(new_day)
     
-    await this.statusDay.update({ id: 1 }, { is_open: true, day_id: saved_day.id });
+    await this.statusDay.update({ id: 1 }, { is_open: Status_day.open, day_id: saved_day.id });
 
     return saved_day
 }
 
 async closeDay(){
-    const ex = await this.dayEntity.findOne({where: {finish: IsNull()}})
-    console.log(ex)
-    await this.dayEntity.update({id: ex?.id}, { finish: new Date()})
-    await this.statusDay.update({id: 1}, {is_open: false, day_id: null})
+    const ex = await this.dayEntity.findOne({where: {finish: IsNull()}});    if(!ex){throw new NotFoundException}
+    
+    ex.finish = new Date()
+    await this.dayEntity.save(ex)
+    await this.statusDay.update({id: 1}, {is_open: Status_day.closed})
     return {message: 'day closed'}
 }
 }

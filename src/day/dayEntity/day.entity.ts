@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm';
 import { Staff } from 'src/staff/staff.entity/staff.entity'; 
 import { Order } from '../../order/order.entity';
 
@@ -19,6 +19,7 @@ export class Day {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   start: Date;
 
+  @Index()
   @Column({ type: 'datetime', nullable: true })
   finish: Date | null;
 

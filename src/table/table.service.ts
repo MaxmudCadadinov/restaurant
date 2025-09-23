@@ -7,6 +7,8 @@ import { Day } from 'src/day/dayEntity/day.entity';
 import { StatusDay } from 'src/day/dayEntity/statusDay.entity';
 import { Order } from 'src/order/order.entity';
 import { BookingDateDto } from './tabledto/booking_tableDto';
+import { Status_day } from 'src/day/dayEntity/statusDay.entity';
+import { Chacking_status } from './table_entity/table.entity';
 
 @Injectable()
 export class TableService {
@@ -32,7 +34,7 @@ export class TableService {
             const table = await this.tablesEntity.findOne({where: {id: Number(id)}})
             if(!table){throw new NotFoundException("Table not found")}
 
-            if(table.status === 1 && table.chacking_status === true){
+            if(table.status === 1 && table.chacking_status === Chacking_status.Chacking){
                 table.chacking_status = null
                 table.status = 0
                 return await this.tablesEntity.save(table)
@@ -44,8 +46,8 @@ export class TableService {
             if(!table){throw new NotFoundException("table not found")}
             
             //console.log(table)
-            if (table.status === 1 &&  table.chacking_status === false && table.order){
-                const day_id = (await this.statusDayEntity.findOne({where: {id: 1, is_open: true}}))?.day_id
+            if (table.status === 1 &&  table.chacking_status === Chacking_status.NotChacking && table.order){
+                const day_id = (await this.statusDayEntity.findOne({where: {id: 1}}))?.day_id
                 if(!day_id){throw new NotFoundException("dayId not found")}
                 //console.log(day_id)
                 const day = await this.dayEntity.findOne({where: {id: day_id}})
@@ -63,7 +65,7 @@ export class TableService {
 
                 
                 
-                table.chacking_status = true
+                table.chacking_status = Chacking_status.Chacking
                 table.order = null 
                 
 

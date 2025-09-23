@@ -10,7 +10,7 @@ import { Foods } from 'src/food/food.entity';
 import { StatusDay } from 'src/day/dayEntity/statusDay.entity';
 import { UpdateOrderDto } from './orderDto/updateOrderDto';
 import { DeleteFoodInOrderDto } from './orderDto/deleteFoodInOrderDto';
-import { find } from 'rxjs';
+import { Chacking_status } from '../table/table_entity/table.entity';
 
 @Injectable()
 export class OrderService {
@@ -80,7 +80,7 @@ if(!dto.order_id){
                 await this.orderItemsEntity.save(order_item)
             }
             
-            await this.tableEntity.update({id:table.id}, { status: 1, order: saved_order, chacking_status: false })
+            await this.tableEntity.update({id:table.id}, { status: 1, order: saved_order, chacking_status: Chacking_status.NotChacking })
             
             return saved_order
 
@@ -91,8 +91,8 @@ if(!dto.order_id){
         
         const order = await this.orderEntity.findOne({where: {id: dto.order_id}, relations:['table']})
         //console.log(order)
-        if (!order){throw new NotFoundException("order not found")}
-        if(order.closed){throw new BadRequestException("order closed")}
+        if (!order || order.closed){throw new NotFoundException("order not found or closed")}
+     
         const table = await this.tableEntity.findOne({where: {id: order.table.id}, relations: ['order']})
         if(!table){throw new NotFoundException("table not found")}
         //console.log(table)
@@ -194,12 +194,7 @@ if(!dto.order_id){
             if(i.quantity > 0){await this.orderItemsEntity.save(i)}
         }
         order.total_summ = total
-        await this.orderEntity.save(order)    
-
-
-       
-
-       
+        await this.orderEntity.save(order)  
 
     }
 
