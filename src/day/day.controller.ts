@@ -1,8 +1,8 @@
 import { Controller, Body, Post, Patch, UseGuards } from '@nestjs/common';
 import { CreateDayDto } from './day_dto/create_day.dto'
 import { DayService } from './day.service'
-import { DayClosedGuard } from 'src/StatusdayGuards/DayClosedGuard'
-import { DayOpenGuard } from 'src/StatusdayGuards/DayOpenGuard';
+import { DayClosedGuard } from 'src/guards/DayClosedGuard'; 
+import { DayOpenGuard } from 'src/guards/DayOpenGuard'; 
 
 @Controller('day')
 export class DayController {

@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany,JoinColumn } from 'typeorm';
 import { Role } from '../../role/role.entity';
 import { Day } from '../../day/dayEntity/day.entity';
-import { Tables } from '../../table/table_entity/table.entity';
-import { StaffWorkers } from '../../staff_workers/staff_workers.entity';
 import { Order } from '../../order/order.entity'
+import { Runshift } from '../../runshift/runshift.entity';
+
 
 
 @Entity('staff')
@@ -27,6 +27,12 @@ export class Staff {
   @OneToMany(() => Order, (order) => order.worker)
   orders: Order[];//
 
-  @OneToMany(() => StaffWorkers, (sw) => sw.staff)
-  staffWorkers: StaffWorkers[];//
+  @OneToMany(() => Runshift, (runshift) => runshift.staff)
+  runshift: Runshift[];
+
+  @OneToMany(() => Runshift, (runshift) => runshift.activatedAdministator)
+  activated_user: Runshift
+
+  @OneToMany(() => Runshift, (runshift) => runshift.updatedUser)
+  updatedRunshiftUser: Runshift
 }

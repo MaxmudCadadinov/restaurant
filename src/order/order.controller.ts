@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Param, Delete, Patch, Req, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { CreateOrderDto } from './orderDto/createOrderDto'
 import { OrderService } from './order.service'
-import { DayOpenGuard } from 'src/StatusdayGuards/DayOpenGuard';
+import { DayOpenGuard } from 'src/guards/DayOpenGuard';  
 import { UpdateOrderDto } from './orderDto/updateOrderDto';
 import { DeleteFoodInOrderDto } from './orderDto/deleteFoodInOrderDto';
 

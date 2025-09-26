@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm';
 import { Staff } from 'src/staff/staff.entity/staff.entity'; 
 import { Order } from '../../order/order.entity';
+import { Runshift } from 'src/runshift/runshift.entity';
+
 
 @Entity('day')
 export class Day {
@@ -29,6 +31,9 @@ export class Day {
 
   @OneToMany(() => Order, (order) => order.day)
   orders: Order[];
+
+  @OneToMany(() => Runshift, (runshift) => runshift.day)
+  runshift: Runshift
 }
 
 

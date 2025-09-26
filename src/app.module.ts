@@ -3,18 +3,20 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TableModule } from './table/table.module';
 import { StaffModule } from './staff/staff.module';
-import { OrderController } from './order/order.controller';
-import { OrderService } from './order/order.service';
 import { OrderModule } from './order/order.module';
 import { RoleModule } from './role/role.module';
 import { DayModule } from './day/day.module';
-import { StaffWorkersModule } from './staff_workers/staff_workers.module';
+
 import { OrderItemsModule } from './order_items/order_items.module';
 import { FoodModule } from './food/food.module';
 import { TypeMenuModule } from './type_menu/type_menu.module';
-import { SmenaModule } from './smena/smena.module';
+
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RunshiftModule } from './runshift/runshift.module';
+import { SmenaModule } from './smena/smena.module';
+import { LoginLogautModule } from './login-logaut/login-logaut.module';
+
 
 
 
@@ -36,11 +38,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     OrderModule, 
     RoleModule, 
     DayModule, 
-    StaffWorkersModule, 
     OrderItemsModule, 
     FoodModule, 
     TypeMenuModule, 
-    SmenaModule],
+    RunshiftModule, SmenaModule, LoginLogautModule],
   controllers: [AppController],
   providers: [AppService],
 })
