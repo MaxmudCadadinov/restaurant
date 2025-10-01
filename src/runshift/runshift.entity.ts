@@ -9,10 +9,16 @@ export enum RunshiftCode{
 
 export enum DeactivatedUser{
     server_deactivated = 'server_deactivated',
-    staff_deactivated = 'staff_deactivated'
+    staff_deactivated = 'staff_deactivated',
+    NOT_DEACTIVATED = 'not_deactivated'
 }
 
-@Entity('runshify')
+export enum Nulling_Status{
+    Not_nulling = 'not_nulling',
+    Nulling = 'nulling'
+}
+
+@Entity('runshift')
 
 export class Runshift {
 
@@ -29,8 +35,8 @@ date_start: Date | null
 @Column({ type: 'datetime', nullable: true })
 date_finish: Date | null;
 
-@Column({ type: 'varchar', nullable:true})
-working_hours: string
+@Column({ type: 'int', nullable:true})
+working_sec: number | null
 
 @Column({type: 'int' })
 code: number
@@ -43,7 +49,7 @@ code_status: RunshiftCode
 activatedAdministator: Staff
 
 @Column({type: 'enum', enum: DeactivatedUser, nullable: true})
-deactivatedUser: DeactivatedUser | null
+deactivatedUser: DeactivatedUser 
 
 @ManyToOne(() => Day, (day) => day.runshift, {nullable: true})
 @JoinColumn({name: 'day_id'})
@@ -61,4 +67,7 @@ update: Date
 
 @ManyToOne(() => Staff, (staff) => staff.updatedRunshiftUser, {nullable: true})
 updatedUser: Staff
+
+@Column({type: 'enum', enum: Nulling_Status, default: Nulling_Status.Not_nulling})
+nulling_status: Nulling_Status
 }

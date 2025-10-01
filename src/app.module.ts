@@ -16,6 +16,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RunshiftModule } from './runshift/runshift.module';
 import { SmenaModule } from './smena/smena.module';
 import { LoginLogautModule } from './login-logaut/login-logaut.module';
+import { RunshiftStatisticsModule } from './runshift_statistics/runshift_statistics.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { DayStatisticsModule } from './day_statistics/day_statistics.module';
+import { OrderItemsGateway } from './websocket';
 
 
 
@@ -33,6 +37,7 @@ import { LoginLogautModule } from './login-logaut/login-logaut.module';
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: true,
   }),
+  ScheduleModule.forRoot(),
     TableModule, 
     StaffModule, 
     OrderModule, 
@@ -41,8 +46,8 @@ import { LoginLogautModule } from './login-logaut/login-logaut.module';
     OrderItemsModule, 
     FoodModule, 
     TypeMenuModule, 
-    RunshiftModule, SmenaModule, LoginLogautModule],
+    RunshiftModule, SmenaModule, LoginLogautModule, RunshiftStatisticsModule, DayStatisticsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, OrderItemsGateway],
 })
 export class AppModule {}

@@ -1,6 +1,7 @@
 import { Controller, Patch, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { CreateOrderItemOrderDto } from '../order_items/orderItemsDto/updateOrderItems.dto'
 import { OrderItemsService } from './order_items.service'
+import { Repository } from 'typeorm';
 
 @Controller('order-items')
 export class OrderItemsController {
@@ -10,14 +11,13 @@ export class OrderItemsController {
 
 
 
-    @Patch('/updateInOrderItems/:id')
-    async updateOrderItems(@Body() dto: CreateOrderItemOrderDto, @Param('id', ParseIntPipe) id: string){
-        return await this.orderItemsService.updateOrderItems(dto, Number(id))
+    @Patch('/start_cooking/:order_itemID')
+    async start_cooking(@Param('order_itemID', ParseIntPipe) order_itemID: number){
+        return await this.orderItemsService.start_cooking(order_itemID)
     }
 
-    @Delete('/deleteInOrderItem/:id')
-    async deleteInOrderItems(@Body() dto: CreateOrderItemOrderDto, @Param('id', ParseIntPipe) id: string){
-        return await this.orderItemsService.deleteInOrderItems(dto, Number(id))
+    @Patch('/finish_cooking/:order_itemID')
+    async finish_cooking(@Param('order_itemID', ParseIntPipe) order_itemID: number){
+        return await this.orderItemsService.finish_cooking(order_itemID)
     }
-
 }

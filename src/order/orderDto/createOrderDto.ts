@@ -6,18 +6,13 @@ import { OrderItemDto } from '../../order_items/orderItemsDto/updateOrderItems.d
 
 export class CreateOrderDto {
 
-@ApiPropertyOptional()
-@IsOptional()
-@IsNumber()
-order_id: number
+
 @ApiPropertyOptional()
 @IsOptional()
 @IsNumber()
 table_id: number; 
-@ApiPropertyOptional() 
-@IsOptional()               
-@IsNumber()
-worker_id: number;  
+
+
 @ApiPropertyOptional({type: [OrderItemDto], description: 'Список продуктов в заказе'})                                    
 @IsArray()         
 @Type(() => OrderItemDto)         

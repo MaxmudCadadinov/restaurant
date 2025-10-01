@@ -3,6 +3,7 @@ import { Role } from '../../role/role.entity';
 import { Day } from '../../day/dayEntity/day.entity';
 import { Order } from '../../order/order.entity'
 import { Runshift } from '../../runshift/runshift.entity';
+import { DELETED_STATUS } from 'src/enum/enum';
 
 
 
@@ -35,4 +36,11 @@ export class Staff {
 
   @OneToMany(() => Runshift, (runshift) => runshift.updatedUser)
   updatedRunshiftUser: Runshift
+
+  @Column({type: 'enum', enum:DELETED_STATUS, default: DELETED_STATUS.NOT_DELETED })
+  deleted_status: DELETED_STATUS
+
+  @Column({type: 'datetime', nullable: true})
+  deletedDate: Date | null
 }
+

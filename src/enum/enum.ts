@@ -1,0 +1,4 @@
+export enum DELETED_STATUS{
+  DELETED = 'DELETED',
+  NOT_DELETED = 'NOT_DELETED'
+}

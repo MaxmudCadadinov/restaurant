@@ -13,6 +13,7 @@ import { StatusDay } from './dayEntity/statusDay.entity'
     TypeOrmModule.forFeature([Day, Staff, Role, StatusDay])
   ],
   controllers: [DayController],
-  providers: [DayService]
+  providers: [DayService],
+
 })
 export class DayModule {}

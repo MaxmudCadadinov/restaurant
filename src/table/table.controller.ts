@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Patch, Param, ParseIntPipe, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, ParseIntPipe, Delete, Get, Query } from '@nestjs/common';
 import { TableService } from './table.service'
-import { CreateTableDto } from './tabledto/create_tabledto'
+import { CreateTableDto, FilterTableDto, UpdateTableDto } from './tabledto/create_tabledto'
 import { BookingDateDto } from './tabledto/booking_tableDto'; 
 
 
@@ -39,5 +39,18 @@ export class TableController {
         return this.tableService.close_chack(id)
     }
 
+
+
+
+    
+    @Get('/get_all_tables')
+    async all_tables(@Query() dto: FilterTableDto){
+        return await this.tableService.all_tables(dto)
+    }
+
+    @Delete('/delete_table/:id')
+    async delete_table(@Param('id', ParseIntPipe) id: number){
+        return await this.tableService.delete_table(id)
+    }
     
 }

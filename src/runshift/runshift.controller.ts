@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { RunshiftService } from './runshift.service';
 import { JwtGuard } from 'src/guards/GuardJwtToken';
 import { DayOpenGuard } from 'src/guards/DayOpenGuard';
 import { UpdateRunshiftDTO } from './runshiftDto/updateTimeFinishDto';
+import { All_runshiftsDTO } from './runshiftDto/get_all_runshifts_dto';
 
 
 @Controller('runshift')
@@ -37,5 +38,10 @@ export class RunshiftController {
     return await this.runshiftService.updateRunshift(user, runshiftID, dto)
   }
 
+  @Get('all_runshifts')
+  //@UseGuards(JwtGuard)
+  async get_all_runshift(@Query() dto: All_runshiftsDTO){
+    return await this.runshiftService.all_runshift(dto)
+  }
   
 }

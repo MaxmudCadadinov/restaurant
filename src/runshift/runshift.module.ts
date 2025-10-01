@@ -6,10 +6,11 @@ import { Runshift } from './runshift.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StatusDay } from 'src/day/dayEntity/statusDay.entity';
 import { Day } from 'src/day/dayEntity/day.entity';
+import { RunshiftStatisticsModule } from 'src/runshift_statistics/runshift_statistics.module';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Staff, Runshift, StatusDay, Day])],
+  imports: [TypeOrmModule.forFeature([Staff, Runshift, StatusDay, Day]),RunshiftStatisticsModule],
   controllers: [RunshiftController],
   providers: [RunshiftService],
 })
